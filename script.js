@@ -1,121 +1,193 @@
-// 1. Inisialisasi Elemen UI
-const farmForm = document.getElementById('farmForm');
-const cardContainer = document.getElementById('cardContainer');
-const totalItemDisplay = document.getElementById('totalItem');
-const totalModalDisplay = document.getElementById('totalModal');
-
-// 2. Jalankan Fungsi Render saat halaman pertama kali dibuka
-document.addEventListener('DOMContentLoaded', renderCards);
-
-// 3. Fungsi Tambah Data (Submit Form)
-farmForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    
-    const newData = {
-        id: Date.now(),
-        tanaman: document.getElementById('jenisTanaman').value,
-        nama: document.getElementById('nama').value,
-        qty: document.getElementById('qty').value,
-        dosis: document.getElementById('dosis').value,
-        harga: document.getElementById('harga').value,
-        fungsi: document.getElementById('fungsi').value,
-        manfaat: document.getElementById('manfaat').value
-    };
-
-    let db = JSON.parse(localStorage.getItem('farmDB')) || [];
-    db.push(newData);
-    localStorage.setItem('farmDB', JSON.stringify(db));
-    
-    farmForm.reset(); // Kosongkan form setelah simpan
-    renderCards();    // Perbarui tampilan
-});
-
-// 4. Fungsi Utama untuk Menampilkan Data
-function renderCards() {
-    let db = JSON.parse(localStorage.getItem('farmDB')) || [];
-    renderToUI(db);
+:root {
+    --primary: #2d6a4f;
+    --secondary: #40916c;
+    --bg: #f8f9fa;
+    --text: #1b4332;
 }
 
-// 5. Fungsi Pencarian & Filter Tanaman
-function searchData() {
-    const keyword = document.getElementById('searchInput').value.toLowerCase();
-    const filterTanaman = document.getElementById('filterTanaman').value;
-    let db = JSON.parse(localStorage.getItem('farmDB')) || [];
-    
-    const filteredData = db.filter(item => {
-        const matchKeyword = item.nama.toLowerCase().includes(keyword) || 
-                             item.fungsi.toLowerCase().includes(keyword);
-        const matchTanaman = (filterTanaman === "Semua") || (item.tanaman === filterTanaman);
-        
-        return matchKeyword && matchTanaman;
-    });
-
-    renderToUI(filteredData);
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    margin: 0;
 }
 
-// 6. Fungsi Helper untuk Merender Data ke Layar
-function renderToUI(data) {
-    cardContainer.innerHTML = '';
-    totalItemDisplay.innerText = `${data.length} Item Ditampilkan`;
-    
-    // Hitung Total Modal dari data yang tampil
-    const total = data.reduce((sum, item) => sum + Number(item.harga), 0);
-    totalModalDisplay.innerText = `Rp ${total.toLocaleString()}`;
+.wrapper {
+    display: flex;
+    min-height: 100vh;
+}
 
-    if(data.length === 0) {
-        cardContainer.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: #666; padding: 20px;">Belum ada catatan untuk kategori ini.</p>`;
-        return;
+.sidebar {
+    width: 250px;
+    background: var(--primary);
+    color: white;
+    padding: 30px;
+    position: fixed;
+    height: 100vh;
+}
+
+.content {
+    margin-left: 310px;
+    padding: 40px;
+    width: 100%;
+}
+
+.form-card {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    margin-bottom: 40px;
+}
+
+.input-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 15px;
+}
+
+.input-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+label { font-weight: 600; margin-bottom: 8px; font-size: 0.9rem; }
+
+input, textarea {
+    padding: 12px;
+    border: 1.5px solid #dee2e6;
+    border-radius: 8px;
+    outline: none;
+    transition: 0.3s;
+}
+
+input:focus, textarea:focus { border-color: var(--secondary); }
+
+textarea { height: 100px; resize: none; }
+
+.btn-primary {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    width: 100%;
+}
+
+/* Tampilan Kartu Data */
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.agri-card {
+    background: white;
+    border-left: 5px solid var(--primary);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+}
+
+.agri-card h4 { margin-top: 0; color: var(--primary); border-bottom: 1px solid #eee; padding-bottom: 10px; }
+
+.detail-row { font-size: 0.85rem; margin-bottom: 5px; }
+
+.long-text {
+    margin-top: 15px;
+    padding: 10px;
+    background: #f1f8f5;
+    border-radius: 5px;
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+.btn-del {
+    background: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+/* Style untuk Search Bar */
+.search-container {
+    margin-bottom: 25px;
+}
+
+#searchInput {
+    width: 100%;
+    padding: 15px;
+    border-radius: 10px;
+    border: 2px solid #2d6a4f;
+    font-size: 1rem;
+    box-sizing: border-box;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+/* Optimasi Teks Panjang agar tetap rapi */
+.long-text {
+    margin-top: 15px;
+    padding: 12px;
+    background: #f1f8f5;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    max-height: 150px; /* Batas tinggi maksimal */
+    overflow-y: auto;  /* Munculkan scroll jika teks terlalu panjang */
+    border: 1px solid #e0e0e0;
+}
+
+/* Custom Scrollbar agar terlihat modern */
+.long-text::-webkit-scrollbar {
+    width: 5px;
+}
+.long-text::-webkit-scrollbar-thumb {
+    background: #40916c;
+    border-radius: 10px;
+}
+
+.stats-box.financial {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 15px;
+    border: 1px dashed rgba(255, 255, 255, 0.3);
+}
+
+.stats-box small {
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.7rem;
+    opacity: 0.8;
+}
+
+@media print {
+    /* Sembunyikan form, sidebar, dan tombol hapus saat diprint */
+    .sidebar, .form-card, .search-container, .btn-del, .btn-print, .filter-wrapper {
+        display: none !important;
+    }
+    
+    .content {
+        margin-left: 0 !important;
+        padding: 0 !important;
     }
 
-    data.forEach(item => {
-        // Warna label otomatis berdasarkan jenis tanaman
-        const tagColor = item.tanaman === 'Jagung' ? '#fb8500' : (item.tanaman === 'Padi' ? '#219ebc' : '#2d6a4f');
-
-        cardContainer.innerHTML += `
-            <div class="agri-card">
-                <span style="background: ${tagColor}; color: white; padding: 3px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: bold;">
-                    ${item.tanaman.toUpperCase()}
-                </span>
-                <h4 style="margin: 10px 0 5px 0; color: #1b4332;">${item.nama}</h4>
-                <div class="detail-row" style="font-size: 0.85rem; color: #555;">
-                    <div><strong>Stok:</strong> ${item.qty}</div>
-                    <div><strong>Dosis:</strong> ${item.dosis}</div>
-                    <div style="color: #2d6a4f; font-weight: bold; margin-top: 5px;">Rp ${Number(item.harga).toLocaleString()}</div>
-                </div>
-                
-                <div class="long-text">
-                    <strong>Fungsi:</strong><br>${item.fungsi}
-                </div>
-                <div class="long-text">
-                    <strong>Manfaat:</strong><br>${item.manfaat}
-                </div>
-                
-                <button class="btn-del" onclick="hapusData(${item.id})" style="margin-top: 15px; width: 100%;">Hapus Catatan</button>
-            </div>
-        `;
-    });
-}
-
-// 7. Fungsi Hapus Data
-function hapusData(id) {
-    if(confirm('Apakah kamu yakin ingin menghapus catatan ini?')) {
-        let db = JSON.parse(localStorage.getItem('farmDB'));
-        db = db.filter(item => item.id !== id);
-        localStorage.setItem('farmDB', JSON.stringify(db));
-        renderCards();
+    .agri-card {
+        page-break-inside: avoid;
+        border: 1px solid #ccc !important;
+        box-shadow: none !important;
+        margin-bottom: 20px;
     }
-}
-
-function cetakLaporan() {
-    // Memberikan judul otomatis pada halaman print
-    const filter = document.getElementById('filterTanaman').value;
-    const judulAsli = document.title;
     
-    document.title = `Laporan_Nutrisi_Tanaman_${filter}_${new Date().toLocaleDateString()}`;
-    
-    // Membuka jendela print browser
-    window.print();
-    
-    // Kembalikan judul asli setelah selesai print
-    document.title = judulAsli;
+    body {
+        background-color: white !important;
+    }
 }
