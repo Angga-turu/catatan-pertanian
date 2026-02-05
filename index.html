@@ -50,14 +50,91 @@
                     </div>
                     <div class="input-group">
                         <label>Jenis Tanaman (Komoditas)</label>
-                        <select id="jenisTanaman" required>
-                        <option value="">-- Pilih atau Ketik Tanaman --</option>
-                        <option value="Jagung">Jagung</option>
-                        <option value="Padi">Padi</option>
-                        <option value="Pisang">Pisang</option>
-                        <option value="Cabai">Cabai</option>
-                        <option value="Lainnya">Lainnya</option>
-                        </select>
+                        <select id="jenisTanaman" onchange="cekTipeCabai()" required>
+    <option value="">-- Pilih Tanaman --</option>
+    
+    <optgroup label="Tanaman Pangan">
+        <option value="Padi">Padi</option>
+        <option value="Jagung">Jagung</option>
+        <option value="Singkong">Singkong</option>
+        <option value="Ubi Jalar">Ubi Jalar</option>
+        <option value="Kentang">Kentang</option>
+    </optgroup>
+
+    <optgroup label="Tanaman Perkebunan">
+        <option value="Kelapa Sawit">Kelapa Sawit</option>
+        <option value="Kopi">Kopi</option>
+        <option value="Kakao">Kakao</option>
+        <option value="Teh">Teh</option>
+        <option value="Tebu">Tebu</option>
+        <option value="Karet">Karet</option>
+    </optgroup>
+
+    <optgroup label="Sayuran (Hortikultura)">
+        <option value="Cabai">Cabai</option>
+        <option value="Tomat">Tomat</option>
+        <option value="Bayam">Bayam</option>
+        <option value="Kangkung">Kangkung</option>
+        <option value="Sawi">Sawi</option>
+        <option value="Terong">Terong</option>
+        <option value="Timun">Timun</option>
+        <option value="Bawang Merah">Bawang Merah</option>
+        <option value="Bawang Putih">Bawang Putih</option>
+        <option value="Bawang Bombay">Bawang Bombay</option>
+        <option value="Bawang Daun">Bawang Daun</option>
+    </optgroup>
+
+    <optgroup label="Buah-buahan">
+        <option value="Pisang">Pisang</option>
+        <option value="Mangga">Mangga</option>
+        <option value="Pepaya">Pepaya</option>
+        <option value="Jeruk">Jeruk</option>
+        <option value="Semangka">Semangka</option>
+        <option value="Melon">Melon</option>
+        <option value="Jambu">Jambu</option>
+    </optgroup>
+
+    <optgroup label="Tanaman Hias">
+        <option value="Mawar">Mawar</option>
+        <option value="Anggrek">Anggrek</option>
+        <option value="Bougenville">Bougenville</option>
+        <option value="Aglonema">Aglonema</option>
+        <option value="Monstera">Monstera</option>
+        <option value="Kaktus">Kaktus</option>
+    </optgroup>
+
+    <optgroup label="Obat & Rempah">
+        <option value="Jahe">Jahe</option>
+        <option value="Kunyit">Kunyit</option>
+        <option value="Kencur">Kencur</option>
+        <option value="Lengkuas">Lengkuas</option>
+        <option value="Temulawak">Temulawak</option>
+        <option value="Lidah Buaya">Lidah Buaya</option>
+    </optgroup>
+</select>
+                    </div>
+                    
+                                    
+                   <div id="opsiCabai" style="display: none; margin-top: 15px;" class="input-group">
+                      <label>Tipe Cabai</label>
+                  <select id="tipeCabai">
+                      <option value="">-- Pilih Tipe Cabai --</option>
+                      <option value="Rawit">Rawit</option>
+                      <option value="Besar">Besar</option>
+                      <option value="Keriting">Keriting</option>
+                  </select>
+                   </div>
+                   
+                    <div class="input-group">
+                            <label>Kategori Aset</label>
+                       <select id="kategori" required>
+                            <option value="Pupuk">Pupuk / Nutrisi</option>
+                            <option value="Bibit">Bibit / Benih</option>
+                       </select>
+                    </div>
+                    <div class="input-group">
+                            <label>Merk / Varietas</label>
+                            <input type="text" id="varietas" placeholder="Contoh: Bisi-18 / Inpari 32">
                     </div>
 
                     <div class="input-group">
@@ -76,16 +153,81 @@
             
             <button onclick="cetakLaporan()" class="btn-print" style="background: #1b4332; color: white; padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; margin-bottom: 20px;">🖨️ Cetak Laporan PDF
             </button>
+           <button onclick="hapusSemuaData()" style="background: #bc4749; color: white; padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; margin-bottom: 20px; margin-left: 10px;">🗑️ Kosongkan Semua Riwayat
+          </button>
+
             
-                    <div class="filter-wrapper" style="display: flex; gap: 10px; margin-bottom: 20px;">
-                       <input type="text" id="searchInput" placeholder="Cari pupuk..." onkeyup="searchData()" style="flex: 2;">
-                   <select id="filterTanaman" onchange="searchData()" style="flex: 1; padding: 10px; border-radius: 10px; border: 2px solid #2d6a4f;">
-                       <option value="Semua">Semua Tanaman</option>
-                       <option value="Jagung">Jagung</option>
-                       <option value="Padi">Padi</option>
-                       <option value="Pisang">Pisang</option>
-                   </select>
-                   </div>
+            <div class="filter-wrapper" style="display: flex; gap: 10px; margin-bottom: 20px;">
+    <input type="text" id="searchInput" placeholder="Cari pupuk..." onkeyup="searchData()" style="flex: 2;">
+    
+    <select id="filterTipeCabai" onchange="searchData()" style="flex: 1; display: none; padding: 10px; border-radius: 10px; border: 2px solid #2d6a4f;">
+        <option value="Semua">Semua Tipe</option>
+        <option value="Rawit">Rawit</option>
+        <option value="Besar">Besar</option>
+        <option value="Keriting">Keriting</option>
+    </select>
+
+    <select id="filterTanaman" onchange="updateFilterBawah()" style="flex: 1; padding: 10px; border-radius: 10px; border: 2px solid #2d6a4f;">    <optgroup label="Tanaman Pangan">
+        <option value="Semua Tanaman">Semua Tanaman</option>
+        <option value="Padi">Padi</option>
+        <option value="Jagung">Jagung</option>
+        <option value="Singkong">Singkong</option>
+        <option value="Ubi Jalar">Ubi Jalar</option>
+        <option value="Kentang">Kentang</option>
+    </optgroup>
+
+    <optgroup label="Tanaman Perkebunan">
+        <option value="Kelapa Sawit">Kelapa Sawit</option>
+        <option value="Kopi">Kopi</option>
+        <option value="Kakao">Kakao</option>
+        <option value="Teh">Teh</option>
+        <option value="Tebu">Tebu</option>
+        <option value="Karet">Karet</option>
+    </optgroup>
+
+    <optgroup label="Sayuran (Hortikultura)">
+        <option value="Cabai">Cabai</option>
+        <option value="Tomat">Tomat</option>
+        <option value="Bayam">Bayam</option>
+        <option value="Kangkung">Kangkung</option>
+        <option value="Sawi">Sawi</option>
+        <option value="Terong">Terong</option>
+        <option value="Timun">Timun</option>
+        <option value="Bawang Merah">Bawang Merah</option>
+        <option value="Bawang Putih">Bawang Putih</option>
+        <option value="Bawang Bombay">Bawang Bombay</option>
+        <option value="Bawang Daun">Bawang Daun</option>
+    </optgroup>
+
+    <optgroup label="Buah-buahan">
+        <option value="Pisang">Pisang</option>
+        <option value="Mangga">Mangga</option>
+        <option value="Pepaya">Pepaya</option>
+        <option value="Jeruk">Jeruk</option>
+        <option value="Semangka">Semangka</option>
+        <option value="Melon">Melon</option>
+        <option value="Jambu">Jambu</option>
+    </optgroup>
+
+    <optgroup label="Tanaman Hias">
+        <option value="Mawar">Mawar</option>
+        <option value="Anggrek">Anggrek</option>
+        <option value="Bougenville">Bougenville</option>
+        <option value="Aglonema">Aglonema</option>
+        <option value="Monstera">Monstera</option>
+        <option value="Kaktus">Kaktus</option>
+    </optgroup>
+
+    <optgroup label="Obat & Rempah">
+        <option value="Jahe">Jahe</option>
+        <option value="Kunyit">Kunyit</option>
+        <option value="Kencur">Kencur</option>
+        <option value="Lengkuas">Lengkuas</option>
+        <option value="Temulawak">Temulawak</option>
+        <option value="Lidah Buaya">Lidah Buaya</option>
+    </optgroup>
+</select>
+</div>
 
 <div id="cardContainer" class="card-grid">
     </div>
