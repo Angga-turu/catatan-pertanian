@@ -1,193 +1,148 @@
-:root {
-    --primary: #2d6a4f;
-    --secondary: #40916c;
-    --bg: #f8f9fa;
-    --text: #1b4332;
-}
+const farmForm = document.getElementById('farmForm');
+const cardContainer = document.getElementById('cardContainer');
+const totalModalDisplay = document.getElementById('totalModal');
 
-body {
-    font-family: 'Inter', sans-serif;
-    background-color: var(--bg);
-    color: var(--text);
-    margin: 0;
-}
+document.addEventListener('DOMContentLoaded', renderCards);
 
-.wrapper {
-    display: flex;
-    min-height: 100vh;
-}
-
-.sidebar {
-    width: 250px;
-    background: var(--primary);
-    color: white;
-    padding: 30px;
-    position: fixed;
-    height: 100vh;
-}
-
-.content {
-    margin-left: 310px;
-    padding: 40px;
-    width: 100%;
-}
-
-.form-card {
-    background: white;
-    padding: 25px;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-    margin-bottom: 40px;
-}
-
-.input-row {
-    display: flex;
-    gap: 20px;
-    margin-bottom: 15px;
-}
-
-.input-group {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 15px;
-}
-
-label { font-weight: 600; margin-bottom: 8px; font-size: 0.9rem; }
-
-input, textarea {
-    padding: 12px;
-    border: 1.5px solid #dee2e6;
-    border-radius: 8px;
-    outline: none;
-    transition: 0.3s;
-}
-
-input:focus, textarea:focus { border-color: var(--secondary); }
-
-textarea { height: 100px; resize: none; }
-
-.btn-primary {
-    background: var(--primary);
-    color: white;
-    border: none;
-    padding: 15px;
-    border-radius: 8px;
-    font-weight: 700;
-    cursor: pointer;
-    width: 100%;
-}
-
-/* Tampilan Kartu Data */
-.card-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
-}
-
-.agri-card {
-    background: white;
-    border-left: 5px solid var(--primary);
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.03);
-}
-
-.agri-card h4 { margin-top: 0; color: var(--primary); border-bottom: 1px solid #eee; padding-bottom: 10px; }
-
-.detail-row { font-size: 0.85rem; margin-bottom: 5px; }
-
-.long-text {
-    margin-top: 15px;
-    padding: 10px;
-    background: #f1f8f5;
-    border-radius: 5px;
-    font-size: 0.85rem;
-    line-height: 1.5;
-}
-
-.btn-del {
-    background: #ff4d4d;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 4px;
-    font-size: 0.7rem;
-    cursor: pointer;
-    margin-top: 10px;
-}
-
-/* Style untuk Search Bar */
-.search-container {
-    margin-bottom: 25px;
-}
-
-#searchInput {
-    width: 100%;
-    padding: 15px;
-    border-radius: 10px;
-    border: 2px solid #2d6a4f;
-    font-size: 1rem;
-    box-sizing: border-box;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-}
-
-/* Optimasi Teks Panjang agar tetap rapi */
-.long-text {
-    margin-top: 15px;
-    padding: 12px;
-    background: #f1f8f5;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    line-height: 1.6;
-    max-height: 150px; /* Batas tinggi maksimal */
-    overflow-y: auto;  /* Munculkan scroll jika teks terlalu panjang */
-    border: 1px solid #e0e0e0;
-}
-
-/* Custom Scrollbar agar terlihat modern */
-.long-text::-webkit-scrollbar {
-    width: 5px;
-}
-.long-text::-webkit-scrollbar-thumb {
-    background: #40916c;
-    border-radius: 10px;
-}
-
-.stats-box.financial {
-    background: rgba(255, 255, 255, 0.1);
-    padding: 15px;
-    border-radius: 10px;
-    margin-top: 15px;
-    border: 1px dashed rgba(255, 255, 255, 0.3);
-}
-
-.stats-box small {
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-size: 0.7rem;
-    opacity: 0.8;
-}
-
-@media print {
-    /* Sembunyikan form, sidebar, dan tombol hapus saat diprint */
-    .sidebar, .form-card, .search-container, .btn-del, .btn-print, .filter-wrapper {
-        display: none !important;
-    }
+// FUNGSI OTOMATIS MUNCULKAN TIPE CABAI
+    function cekTipeCabai() {
+    // 1. Ambil nilai dari dropdown tanaman
+    const tanaman = document.getElementById('jenisTanaman').value;
     
-    .content {
-        margin-left: 0 !important;
-        padding: 0 !important;
-    }
+    // 2. Ambil elemen box Cabai yang ingin dimunculkan
+    const boxCabai = document.getElementById('opsiCabai');
 
-    .agri-card {
-        page-break-inside: avoid;
-        border: 1px solid #ccc !important;
-        box-shadow: none !important;
-        margin-bottom: 20px;
+    // 3. Logika: Jika pilihannya 'Cabai', maka tampilkan. Jika tidak, sembunyikan.
+    if (tanaman === 'Cabai') {
+        boxCabai.style.display = 'block';
+    } else {
+        boxCabai.style.display = 'none';
+        document.getElementById('tipeCabai').value = ''; // Reset pilihan tipe
     }
+}
+
+
+// FUNGSI SIMPAN DATA
+farmForm.addEventListener('submit', (e) => {
+    e.preventDefault();
     
-    body {
-        background-color: white !important;
+    const tanamanUtama = document.getElementById('jenisTanaman').value;
+    const tipeCabai = document.getElementById('tipeCabai').value;
+    
+    // Gabungkan nama tanaman jika ada tipe cabai
+    const tanamanFinal = tipeCabai ? `${tanamanUtama} (${tipeCabai})` : tanamanUtama;
+
+    const newData = {
+        id: Date.now(),
+        kategori: document.getElementById('kategori').value,
+        varietas: document.getElementById('varietas').value,
+        tanaman: tanamanFinal,
+        nama: document.getElementById('nama').value,
+        qty: document.getElementById('qty').value,
+        dosis: document.getElementById('dosis').value,
+        harga: document.getElementById('harga').value,
+        fungsi: document.getElementById('fungsi').value,
+        manfaat: document.getElementById('manfaat').value
+    };
+
+    let db = JSON.parse(localStorage.getItem('farmDB')) || [];
+    db.push(newData);
+    localStorage.setItem('farmDB', JSON.stringify(db));
+    
+    // Reset tampilan
+    document.getElementById('opsiCabai').style.display = 'none';
+    farmForm.reset();
+    renderCards();
+});
+
+// FUNGSI TAMPILKAN KARTU
+function renderCards() {
+    let db = JSON.parse(localStorage.getItem('farmDB')) || [];
+    cardContainer.innerHTML = '';
+    
+    // Update Total Modal di Sidebar
+    const total = db.reduce((sum, item) => sum + Number(item.harga), 0);
+    if(totalModalDisplay) totalModalDisplay.innerText = `Rp ${total.toLocaleString()}`;
+
+    db.forEach(item => {
+        const katColor = item.kategori === 'Bibit' ? '#8338ec' : '#2d6a4f';
+        cardContainer.innerHTML += `
+            <div class="agri-card" style="border-left: 8px solid ${katColor}; margin-bottom: 15px; background: white; padding: 15px; border-radius: 10px;">
+                <div style="margin-bottom: 5px;">
+                    <span style="background: ${katColor}; color: white; padding: 2px 7px; border-radius: 4px; font-size: 0.7rem;">${item.kategori}</span>
+                    <span style="background: #0077b6; color: white; padding: 2px 7px; border-radius: 4px; font-size: 0.7rem;">${item.tanaman}</span>
+                </div>
+                <h4 style="margin: 5px 0;">${item.nama}</h4>
+                <p style="font-size: 0.8rem; color: #666;">Varietas: ${item.varietas || '-'}</p>
+                <div style="font-size: 0.85rem; margin: 10px 0;">
+                    <strong>Dosis/Jarak:</strong> ${item.dosis} | <strong>Harga:</strong> Rp ${Number(item.harga).toLocaleString()}
+                </div>
+                <button onclick="hapusData(${item.id})" style="background:#ff4d4d; color:white; border:none; padding:5px; border-radius:4px; width:100%; cursor:pointer;">Hapus</button>
+            </div>
+        `;
+    });
+}
+
+function hapusData(id) {
+    if(confirm('Hapus data?')) {
+        let db = JSON.parse(localStorage.getItem('farmDB'));
+        db = db.filter(item => item.id !== id);
+        localStorage.setItem('farmDB', JSON.stringify(db));
+        renderCards();
+    }
+}
+
+// Fungsi agar dropdown tipe muncul di bagian riwayat bawah
+function updateFilterBawah() {
+    const filterTanaman = document.getElementById('filterTanaman').value;
+    const filterTipe = document.getElementById('filterTipeCabai');
+    
+    if (filterTanaman === 'Cabai') {
+        filterTipe.style.display = 'block';
+    } else {
+        filterTipe.style.display = 'none';
+        filterTipe.value = 'Semua';
+    }
+    searchData(); // Langsung jalankan pencarian
+}
+
+// Fungsi pencarian yang lebih pintar
+function searchData() {
+    const keyword = document.getElementById('searchInput').value.toLowerCase();
+    const fTanaman = document.getElementById('filterTanaman').value;
+    const fTipe = document.getElementById('filterTipeCabai').value;
+    
+    let db = JSON.parse(localStorage.getItem('farmDB')) || [];
+    
+    const filteredData = db.filter(item => {
+        const matchKeyword = item.nama.toLowerCase().includes(keyword);
+        const matchTanaman = (fTanaman === "Semua") || (item.tanaman.startsWith(fTanaman));
+        
+        let matchTipe = true;
+        if (fTanaman === 'Cabai' && fTipe !== 'Semua') {
+            matchTipe = item.tanaman.includes(`(${fTipe})`);
+        }
+        
+        return matchKeyword && matchTanaman && matchTipe;
+    });
+
+    renderFilteredUI(filteredData);
+}
+
+// Fungsi pembantu untuk menampilkan hasil filter
+function renderFilteredUI(data) {
+    // Kamu bisa panggil isi fungsi renderCards() kamu di sini 
+    // atau buat logika tampilan yang sama agar kartu muncul.
+    renderToUI(data); 
+}
+
+function hapusSemuaData() {
+    // Berikan konfirmasi agar tidak terhapus tidak sengaja
+    const konfirmasi = confirm("Apakah kamu yakin ingin menghapus SELURUH catatan? Data yang sudah dihapus tidak bisa dikembalikan.");
+    
+    if (konfirmasi) {
+        localStorage.removeItem('farmDB'); // Menghapus kunci farmDB di Local Storage
+        renderCards(); // Memperbarui tampilan agar kosong
+        alert("Semua riwayat telah dibersihkan.");
     }
 }
