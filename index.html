@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Manajemen Nutrisi Pertanian</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="wrapper">
+        <aside class="sidebar">
+            <h2>AgriAdmin 2.0</h2>
+            <p>Dashboard Manajemen Pertanian</p>
+            <div class="stats-box">
+                <small>Total Inventaris</small>
+                <div id="totalItem">0 Item</div>
+            </div>
+            <br>
+            <div class="stats-box financial">
+               <small>Total Modal Pupuk</small>
+               <div id="totalModal" style="font-size: 1.2rem; font-weight: bold; margin-top: 5px;">Rp 0</div>
+            </div>
+        </aside>
+
+        <main class="content">
+            <section class="form-card">
+                <h3>Tambah Catatan Nutrisi Baru</h3>
+                <form id="farmForm">
+                    <div class="input-row">
+                        <div class="input-group">
+                            <label>Nama Pupuk/Nutrisi</label>
+                            <input type="text" id="nama" placeholder="Contoh: NPK Mutiara" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Jumlah Beli & Satuan</label>
+                            <input type="text" id="qty" placeholder="Contoh: 50 Kg" required>
+                        </div>
+                    </div>
+
+                    <div class="input-row">
+                        <div class="input-group">
+                            <label>Rasio/Dosis (Penting!)</label>
+                            <input type="text" id="dosis" placeholder="Contoh: 5 sendok per 15L air" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Harga Total (Rp)</label>
+                            <input type="number" id="harga" placeholder="Contoh: 150000" required>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Jenis Tanaman (Komoditas)</label>
+                        <select id="jenisTanaman" required>
+                        <option value="">-- Pilih atau Ketik Tanaman --</option>
+                        <option value="Jagung">Jagung</option>
+                        <option value="Padi">Padi</option>
+                        <option value="Pisang">Pisang</option>
+                        <option value="Cabai">Cabai</option>
+                        <option value="Lainnya">Lainnya</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Fungsi Utama (Penjelasan Detail)</label>
+                        <textarea id="fungsi" placeholder="Jelaskan untuk fase apa (vegetatif/generatif) dan kandungan unsurnya..."></textarea>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Manfaat & Efek ke Tanaman</label>
+                        <textarea id="manfaat" placeholder="Bagaimana respon tanaman setelah penggunaan? Misal: Daun lebih hijau dalam 3 hari..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-primary">Simpan ke Database Lokal</button>
+                </form>
+            </section>
+            
+            <button onclick="cetakLaporan()" class="btn-print" style="background: #1b4332; color: white; padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; margin-bottom: 20px;">🖨️ Cetak Laporan PDF
+            </button>
+            
+                    <div class="filter-wrapper" style="display: flex; gap: 10px; margin-bottom: 20px;">
+                       <input type="text" id="searchInput" placeholder="Cari pupuk..." onkeyup="searchData()" style="flex: 2;">
+                   <select id="filterTanaman" onchange="searchData()" style="flex: 1; padding: 10px; border-radius: 10px; border: 2px solid #2d6a4f;">
+                       <option value="Semua">Semua Tanaman</option>
+                       <option value="Jagung">Jagung</option>
+                       <option value="Padi">Padi</option>
+                       <option value="Pisang">Pisang</option>
+                   </select>
+                   </div>
+
+<div id="cardContainer" class="card-grid">
+    </div>
+
+            <section class="display-section">
+                <h3>Log Aktivitas & Riwayat Nutrisi</h3>
+                <div id="cardContainer" class="card-grid">
+                    </div>
+            </section>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
