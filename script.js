@@ -4,33 +4,47 @@ const totalModalDisplay = document.getElementById('totalModal');
 
 document.addEventListener('DOMContentLoaded', renderCards);
 
-// FUNGSI OTOMATIS MUNCULKAN TIPE CABAI
-    function cekTipeCabai() {
-    // 1. Ambil nilai dari dropdown tanaman
+function cekTipeCabai() {
     const tanaman = document.getElementById('jenisTanaman').value;
-    
-    // 2. Ambil elemen box Cabai yang ingin dimunculkan
     const boxCabai = document.getElementById('opsiCabai');
+    if (boxCabai) {
+        boxCabai.style.display = (tanaman === 'Cabai') ? 'block' : 'none';
+    }
+}
 
-    // 3. Logika: Jika pilihannya 'Cabai', maka tampilkan. Jika tidak, sembunyikan.
-    if (tanaman === 'Cabai') {
-        boxCabai.style.display = 'block';
+// Fungsi untuk mengisi template teks otomatis berdasarkan kategori
+function setTemplateTeks() {
+    const kategori = document.getElementById('kategori').value;
+    const inputFungsi = document.getElementById('fungsi');
+    const inputManfaat = document.getElementById('manfaat');
+
+    if (kategori === "Bibit") {
+        inputFungsi.placeholder = "Contoh: Umur panen 100 hari, tahan wereng, nasi pulen...";
+        inputManfaat.placeholder = "Contoh: Potensi hasil 10 ton/ha, cocok untuk lahan kering...";
     } else {
-        boxCabai.style.display = 'none';
-        document.getElementById('tipeCabai').value = ''; // Reset pilihan tipe
+        inputFungsi.placeholder = "Contoh: Kandungan Nitrogen tinggi untuk fase vegetatif...";
+        inputManfaat.placeholder = "Contoh: Daun lebih hijau dalam 3 hari, mempercepat tinggi batang...";
     }
 }
 
 
-// FUNGSI SIMPAN DATA
+function updateFilterBawah() {
+    const fTanaman = document.getElementById('filterTanaman').value;
+    const fTipeBox = document.getElementById('filterTipeCabai');
+    if (fTanaman === 'Cabai') {
+        fTipeBox.style.display = 'block';
+    } else {
+        fTipeBox.style.display = 'none';
+        if(fTipeBox) fTipeBox.value = 'Semua';
+    }
+    searchData();
+}
+
 farmForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    
     const tanamanUtama = document.getElementById('jenisTanaman').value;
     const tipeCabai = document.getElementById('tipeCabai').value;
-    
-    // Gabungkan nama tanaman jika ada tipe cabai
-    const tanamanFinal = tipeCabai ? `${tanamanUtama} (${tipeCabai})` : tanamanUtama;
+    const tanamanFinal = (tanamanUtama === 'Cabai' && tipeCabai) ? `${tanamanUtama} (${tipeCabai})` : tanamanUtama;
 
     const newData = {
         id: Date.now(),
@@ -49,42 +63,69 @@ farmForm.addEventListener('submit', (e) => {
     db.push(newData);
     localStorage.setItem('farmDB', JSON.stringify(db));
     
-    // Reset tampilan
-    document.getElementById('opsiCabai').style.display = 'none';
+    if(document.getElementById('opsiCabai')) document.getElementById('opsiCabai').style.display = 'none';
     farmForm.reset();
     renderCards();
 });
 
-// FUNGSI TAMPILKAN KARTU
 function renderCards() {
     let db = JSON.parse(localStorage.getItem('farmDB')) || [];
-    cardContainer.innerHTML = '';
+    renderToUI(db);
+}
+
+function searchData() {
+    const keyword = document.getElementById('searchInput').value.toLowerCase();
+    const fTanaman = document.getElementById('filterTanaman').value;
+    const fTipe = document.getElementById('filterTipeCabai') ? document.getElementById('filterTipeCabai').value : 'Semua';
     
-    // Update Total Modal di Sidebar
-    const total = db.reduce((sum, item) => sum + Number(item.harga), 0);
+    let db = JSON.parse(localStorage.getItem('farmDB')) || [];
+    const filteredData = db.filter(item => {
+        const matchKeyword = item.nama.toLowerCase().includes(keyword);
+        const matchTanaman = (fTanaman === "Semua") || (item.tanaman.startsWith(fTanaman));
+        let matchTipe = true;
+        if (fTanaman === 'Cabai' && fTipe !== 'Semua') {
+            matchTipe = item.tanaman.includes(`(${fTipe})`);
+        }
+        return matchKeyword && matchTanaman && matchTipe;
+    });
+    renderToUI(filteredData);
+}
+
+function renderToUI(data) {
+    cardContainer.innerHTML = '';
+    const total = data.reduce((sum, item) => sum + Number(item.harga || 0), 0);
     if(totalModalDisplay) totalModalDisplay.innerText = `Rp ${total.toLocaleString()}`;
 
-    db.forEach(item => {
+    data.forEach(item => {
         const katColor = item.kategori === 'Bibit' ? '#8338ec' : '#2d6a4f';
         cardContainer.innerHTML += `
-            <div class="agri-card" style="border-left: 8px solid ${katColor}; margin-bottom: 15px; background: white; padding: 15px; border-radius: 10px;">
-                <div style="margin-bottom: 5px;">
-                    <span style="background: ${katColor}; color: white; padding: 2px 7px; border-radius: 4px; font-size: 0.7rem;">${item.kategori}</span>
-                    <span style="background: #0077b6; color: white; padding: 2px 7px; border-radius: 4px; font-size: 0.7rem;">${item.tanaman}</span>
+            <div class="agri-card" style="border-left: 8px solid ${katColor}; margin-bottom: 15px; background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                <div style="margin-bottom: 8px;">
+                    <span style="background: ${katColor}; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold;">${item.kategori}</span>
+                    <span style="background: #0077b6; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold;">${item.tanaman}</span>
                 </div>
-                <h4 style="margin: 5px 0;">${item.nama}</h4>
-                <p style="font-size: 0.8rem; color: #666;">Varietas: ${item.varietas || '-'}</p>
-                <div style="font-size: 0.85rem; margin: 10px 0;">
-                    <strong>Dosis/Jarak:</strong> ${item.dosis} | <strong>Harga:</strong> Rp ${Number(item.harga).toLocaleString()}
+                <h3 style="margin: 5px 0;">${item.nama}</h3>
+                <p style="font-size: 0.85rem; color: #666;">Varietas: ${item.varietas || '-'}</p>
+                <div style="font-size: 0.8rem; border-top: 1px solid #eee; padding-top: 10px; display: grid; grid-template-columns: 1fr 1fr;">
+                    <div><strong>Stok:</strong> ${item.qty}</div>
+                    <div><strong>Dosis:</strong> ${item.dosis}</div>
                 </div>
-                <button onclick="hapusData(${item.id})" style="background:#ff4d4d; color:white; border:none; padding:5px; border-radius:4px; width:100%; cursor:pointer;">Hapus</button>
+                <div style="color: #2d6a4f; font-weight: bold; margin: 10px 0;">Harga: Rp ${Number(item.harga).toLocaleString()}</div>
+                
+                <div style="background: #f9f9f9; padding: 10px; border-radius: 5px; font-size: 0.8rem; border: 1px solid #eee;">
+                    <strong>Fungsi Utama:</strong><br>${item.fungsi || '-'}<br>
+                    <hr style="margin: 5px 0; border: 0.1px solid #ddd;">
+                    <strong>Manfaat:</strong><br>${item.manfaat || '-'}
+                </div>
+
+                <button onclick="hapusData(${item.id})" style="background:#ff4d4d; color:white; border:none; padding:8px; border-radius:5px; width:100%; margin-top:15px; cursor:pointer;">Hapus</button>
             </div>
         `;
     });
 }
 
 function hapusData(id) {
-    if(confirm('Hapus data?')) {
+    if(confirm('Hapus data ini?')) {
         let db = JSON.parse(localStorage.getItem('farmDB'));
         db = db.filter(item => item.id !== id);
         localStorage.setItem('farmDB', JSON.stringify(db));
@@ -92,57 +133,11 @@ function hapusData(id) {
     }
 }
 
-// Fungsi agar dropdown tipe muncul di bagian riwayat bawah
-function updateFilterBawah() {
-    const filterTanaman = document.getElementById('filterTanaman').value;
-    const filterTipe = document.getElementById('filterTipeCabai');
-    
-    if (filterTanaman === 'Cabai') {
-        filterTipe.style.display = 'block';
-    } else {
-        filterTipe.style.display = 'none';
-        filterTipe.value = 'Semua';
-    }
-    searchData(); // Langsung jalankan pencarian
-}
-
-// Fungsi pencarian yang lebih pintar
-function searchData() {
-    const keyword = document.getElementById('searchInput').value.toLowerCase();
-    const fTanaman = document.getElementById('filterTanaman').value;
-    const fTipe = document.getElementById('filterTipeCabai').value;
-    
-    let db = JSON.parse(localStorage.getItem('farmDB')) || [];
-    
-    const filteredData = db.filter(item => {
-        const matchKeyword = item.nama.toLowerCase().includes(keyword);
-        const matchTanaman = (fTanaman === "Semua") || (item.tanaman.startsWith(fTanaman));
-        
-        let matchTipe = true;
-        if (fTanaman === 'Cabai' && fTipe !== 'Semua') {
-            matchTipe = item.tanaman.includes(`(${fTipe})`);
-        }
-        
-        return matchKeyword && matchTanaman && matchTipe;
-    });
-
-    renderFilteredUI(filteredData);
-}
-
-// Fungsi pembantu untuk menampilkan hasil filter
-function renderFilteredUI(data) {
-    // Kamu bisa panggil isi fungsi renderCards() kamu di sini 
-    // atau buat logika tampilan yang sama agar kartu muncul.
-    renderToUI(data); 
-}
-
 function hapusSemuaData() {
-    // Berikan konfirmasi agar tidak terhapus tidak sengaja
-    const konfirmasi = confirm("Apakah kamu yakin ingin menghapus SELURUH catatan? Data yang sudah dihapus tidak bisa dikembalikan.");
-    
-    if (konfirmasi) {
-        localStorage.removeItem('farmDB'); // Menghapus kunci farmDB di Local Storage
-        renderCards(); // Memperbarui tampilan agar kosong
-        alert("Semua riwayat telah dibersihkan.");
+    if (confirm("Hapus SEMUA riwayat?")) {
+        localStorage.removeItem('farmDB');
+        renderCards();
     }
 }
+
+function cetakLaporan() { window.print(); }
